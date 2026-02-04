@@ -13,9 +13,9 @@ routes = Blueprint('routes', __name__)
 
 @routes.route('/api/data', methods=['GET'])
 def get_data():
-    data, status_code = fetch_financial_data()
+    data, status_code, error_message = fetch_financial_data()
     if not data:
-        return jsonify({"error:" "Failed to fetch data"}), status_code
+        return jsonify({"error": error_message or "Failed to fetch data"}), status_code
 
 
     #extracting the data

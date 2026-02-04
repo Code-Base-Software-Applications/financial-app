@@ -5,14 +5,14 @@ import os
 def fetch_financial_data(symbol="AAPL"):
     API_KEY = os.getenv("API_KEY")
     if not API_KEY:
-        raise ValueError("API_KEY not found in environment variables")
+        return None, 500, "API_KEY not found in environment variables"
     api_url = f"https://financialmodelingprep.com/api/v3/income-statement/{symbol}?apikey={API_KEY}"
     response = requests.get(api_url)
 
     if response.status_code != 200:
-        return None, response.status_code
+        return None, response.status_code, "Failed to fetch data from upstream API"
     
-    return response.json(), 200
+    return response.json(), 200, None
 
 def filter_data_by_date(data, start_year, end_year):
     if start_year and end_year:
@@ -24,4 +24,3 @@ def sort_data(data, sort_key, descending):
     if sort_key in valid_sort_keys:
         data = sorted(data, key=lambda x: x.get(sort_key, 0), reverse=descending)
     return data
-
