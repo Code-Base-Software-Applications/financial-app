@@ -35,7 +35,15 @@ const App = () => {
       const url = `${API_BASE}/api/data?${params.toString()}`;
       const response = await fetch(url);
       const result = await response.json();
-      setData(result);
+      if (!response.ok) {
+        setError(result?.error || "Failed to load data.");
+        setData([]);
+      } else if (Array.isArray(result)) {
+        setData(result);
+      } else {
+        setError("Unexpected response format from API.");
+        setData([]);
+      }
       setLoading(false);
     } catch (error) {
       console.error("Error fetching data:", error);
