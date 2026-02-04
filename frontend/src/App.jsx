@@ -13,52 +13,29 @@ const App = () => {
   const [sortKey, setSortKey] = useState("date");
   const [sortOrder, setSortOrder] = useState("asc");
 
-  const API_BASE =
-    import.meta.env.VITE_API_BASE || "http://50.19.182.206:5000";
-
-  const fetchData = async (overrides = {}) => {
-    try {
-      setLoading(true);
-      setError(null);
-
-      const params = new URLSearchParams();
-      const start = overrides.startYear ?? startYear;
-      const end = overrides.endYear ?? endYear;
-      const key = overrides.sortKey ?? sortKey;
-      const order = overrides.sortOrder ?? sortOrder;
-
-      if (start) params.set("start_year", start);
-      if (end) params.set("end_year", end);
-      if (key) params.set("sort_key", key);
-      params.set("descending", order === "desc" ? "true" : "false");
-
-      const url = `${API_BASE}/api/data?${params.toString()}`;
-      const response = await fetch(url);
-      const result = await response.json();
-      setData(result);
-      setLoading(false);
-    } catch (error) {
-      console.error("Error fetching data:", error);
-      setError("Failed to load data.");
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch("/api/data");
+        const result = await response.json();
+        setData(result);
+        setLoading(false);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        setLoading(false);
+      }
+    };
+
     fetchData();
   }, []);
 
   const handleSort = (key) => {
-    let nextOrder = sortOrder;
     if (sortKey === key) {
-      nextOrder = sortOrder === "asc" ? "desc" : "asc";
-      setSortOrder(nextOrder);
+      setSortOrder(sortOrder === "asc" ? "desc" : "asc");
     } else {
       setSortKey(key);
-      nextOrder = "asc";
-      setSortOrder(nextOrder);
+      setSortOrder("asc");
     }
-    fetchData({ sortKey: key, sortOrder: nextOrder });
   };
 
   if (loading) return <div className="text-center mt-10">Loading...</div>;
@@ -96,7 +73,7 @@ const App = () => {
           />
         </div>
         <button
-          onClick={() => fetchData()}
+          onClick={() => {}}
           className="bg-blue-500 text-white font-medium py-2 px-4 rounded mt-auto"
         >
           Apply Filters
